@@ -1,0 +1,9 @@
+member(X,[X|_]):-!.
+member(X,[_|Ys]):-member(X,Ys).
+append([],Y,Y).
+append([X|Xs],Y,[X|R]):-append(Xs,Y,R).
+reverse([],[]).
+reverse([X|Xs],Yl):-reverse(Xs,Y),append(Y,[X],Yl).
+planPath(PathList):-connect(start,X),planPathproc(X, PathList,_, []).
+planPathproc(Current, [],0,_):-corner(ua, Current),!.
+planPathproc(Current, [Direction|PathList], Cost+1, Visited):-connect(Current,Next, Direction),not(member(Next,Visited)),planPathproc(Next, PathList,Cost,[Next|Visited]).

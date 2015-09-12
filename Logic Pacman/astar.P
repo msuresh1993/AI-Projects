@@ -1,0 +1,26 @@
+member((X,_),[(X,_)|_]):-!.
+member(X,[_|Ys]):-member(X,Ys).
+append([],Y,Y).
+append([X|Xs],Y,[X|R]):-append(Xs,Y,R).
+reverse([],[]).
+reverse([X|Xs],Yl):-reverse(Xs,Y),append(Y,[X],Yl).
+length([],0).
+length([X|Xs],Len):-length(Xs,Lentemp),Len is Lentemp+1.
+fn((X,D),Cost):-heuristic(X,Hn),length(D,Gn),Cost is Hn+Gn.
+findSmallestCost([],A,A):-!.
+findSmallestCost([(X,D)|Xs],Smallest,Ans):-fn((X,D),Cost),(Cost>Smallest->findSmallestCost(Xs,Smallest,Ans);findSmallestCost(Xs,Cost,Ans)).
+extractSmallest([],_,_,_,[]):-!.
+extractSmallest([(X,D)|Xs],Smallest,Smallnode, Rest, Final):-fn((X,D),Smallest),!,Smallnode = (X,D), append(Rest,Xs,Final).
+extractSmallest([(X,D)|Xs],Smallest,Smallnode,Rest,Final):-fn((X,D),_),append([(X,D)],Rest, Ans), extractSmallest(Xs,Smallest,Smallnode,Ans,Final).
+insertSort([],[]):-!.
+insertSort(X,[Smallnode|R]):-findSmallestCost(X,99999,Cost),extractSmallest(X,Cost, Smallnode,[],Final),insertSort(Final,R).
+updatedir([],_,[]).
+updatedir([(X,D)|Ys],Dpar,[(X,Ds)|Res]):-append(Dpar,D,Ds),updatedir(Ys,Dpar,Res).
+sanitizeList([],_,[]).
+sanitizeList([X|Xs],Visited,[X|Res]):-not(member(X,Visited)),sanitizeList(Xs,Visited, Res).
+sanitizeList([X|Xs],Visited,Res):-member(X,Visited),sanitizeList(Xs,Visited, Res).
+findsuccessorsproc(X,L):-findall((Y,[D]),connect(X,Y,D),L).
+findsuccessors(X,Ls,Visited,D):-findsuccessorsproc(X,Ltemp),sanitizeList(Ltemp, Visited, L),updatedir(L,D, Ls).
+planPathbfs(PathList):-connect(start,X),planPathproc([(X,[t])],PathList1,_, []),PathList1 = [t|PathList].
+planPathproc([(X,D)|_], D,0,_):-corner(ua, X),!.
+planPathproc([(X,D)|Xs], PathList, Cost+1, Visited):-findsuccessors(X,L,Visited,D),append(Xs,L,New),insertSort(New,Sort),planPathproc(Sort, PathList,Cost,[(X,D)|Visited]).

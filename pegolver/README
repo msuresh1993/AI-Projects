@@ -1,0 +1,13 @@
+NAME MUTHUKUMAR SURESH 109835938
+There are 4 files in this project:
+1) pegsolver_IDS is for the Iterative deepning search
+2) pegsolver_heuristic0 is for the base heuristic (Explained in document)
+3) pegsolver_heuristic1 is for the heuristic 1 (Explained in document) 
+4) pegsolver_heuristic2 is for the heuristic 2 (Explained in document)
+
+IMPLEMENTED IN PYTHON 3.4. 
+
+To run: just run it like a normal python file
+If  want the default board coded in then press y else press n to enter your own. You can just copy the one that is given in stdout and modify it.
+
+

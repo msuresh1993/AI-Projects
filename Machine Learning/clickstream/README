@@ -1,0 +1,5 @@
+To run the Click Stream project, you have to use python 2.7 version. 
+Go to folder click stream  
+run python clickstream.py.(Make sure that you are in the project folder, to access the data files.)
+
+ 

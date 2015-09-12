@@ -1,0 +1,27 @@
+member((X,_),[(X,_)|_]):-!.
+member(X,[_|Ys]):-member(X,Ys).
+append([],Y,Y).
+append([X|Xs],Y,[X|R]):-append(Xs,Y,R).
+reverse([],[]).
+reverse([X|Xs],Yl):-reverse(Xs,Y),append(Y,[X],Yl).
+length([],0).
+length([X|Xs],Len):-length(Xs,Lentemp),Len is Lentemp+1.
+updatedir([],_,[]).
+updatedir([(X,D)|Ys],Dpar,[(X,Ds)|Res]):-append(Dpar,D,Ds),updatedir(Ys,Dpar,Res).
+sanitizeList([],_,[]).
+sanitizeList([X|Xs],Visited,[X|Res]):-not(member(X,Visited)),sanitizeList(Xs,Visited, Res).
+sanitizeList([X|Xs],Visited,Res):-member(X,Visited),sanitizeList(Xs,Visited, Res).
+memberSimple(X,[X|_]):- !.
+numberGoals(Len):-findall(X,corner(X,_),L),length(L,Len).
+memberSimple(X,[_|Xs]):-memberSimple(X,Xs).
+isCorner(X,CornerList,CornerList):- corner(L,X),memberSimple(L,CornerList),!, fail.
+isCorner(X,CornerList,CornerListNew):-corner(L,X), CornerListNew = [L|CornerList].
+isCorner(X,CornerList,CornerList):-fail.
+findsuccessorsproc(X,L):-findall((Y,[D]),connect(X,Y,D),L).
+findsuccessors(X,Ls,Visited,D):-findsuccessorsproc(X,Ltemp),sanitizeList(Ltemp, Visited, L),updatedir(L,D, Ls).
+planPathbfs(PathList):-retractall(allcorners(X)),assert(allcorners(undf)),connect(start,X),planPathproc([(X,[t])],PathList1,_, [],[]),PathList1 = [t|PathList].
+planPathproc([(X,D)|_], D,0,_,CornerList):-isCorner(X,CornerList,CornerListNew)
+
+,numberGoals(Len),length(CornerListNew, Len),write(CornerListNew),write(D),!.
+planPathproc([(X,D)|Xs], PathList, Cost+1, Visited,CornerList):-isCorner(X,CornerList, CornerListNew),!,findsuccessors(X,L,[],D),append(Xs,L,New),planPathproc(L, PathList,Cost,[(X,D)],CornerListNew).
+planPathproc([(X,D)|Xs], PathList, Cost+1, Visited,CornerList):-findsuccessors(X,L,Visited,D),append(Xs,L,New),planPathproc(New, PathList,Cost,[(X,D)|Visited],CornerList).
